@@ -1,0 +1,58 @@
+From: Kentaro Hayashi <kenhys@xdump.org>
+Date: Mon, 14 Oct 2024 18:12:50 +0900
+Subject: Fix ftbfs on 32bit architecture
+
+Author: HAYASHI Kentaro <kenhys@xdump.org>
+Forwarded: not-needed
+---
+ src/gui/src/ScreenSetupModel.cpp | 12 ++++++++++++
+ src/lib/gui/ipc/QIpcClient.cpp   |  9 +++++++++
+ 2 files changed, 21 insertions(+)
+
+diff --git a/src/gui/src/ScreenSetupModel.cpp b/src/gui/src/ScreenSetupModel.cpp
+index d113078..3de12d8 100644
+--- a/src/gui/src/ScreenSetupModel.cpp
++++ b/src/gui/src/ScreenSetupModel.cpp
+@@ -43,9 +43,21 @@ ScreenSetupModel::ScreenSetupModel(
+   }
+ 
+   if (m_NumColumns * m_NumRows > screens.size()) {
++#if defined(__GNUC__)
++#if UINTPTR_MAX == 0xffffffff
++    qFatal(
++        "scrren list (%d) too small for %d columns x %d rows", screens.size(),
++        m_NumColumns, m_NumRows);
++#else
++    qFatal(
++        "scrren list (%lld) too small for %d columns x %d rows", screens.size(),
++        m_NumColumns, m_NumRows);
++#endif
++#else
+     qFatal(
+         "scrren list (%lld) too small for %d columns x %d rows", screens.size(),
+         m_NumColumns, m_NumRows);
++#endif
+   }
+ }
+ 
+diff --git a/src/lib/gui/ipc/QIpcClient.cpp b/src/lib/gui/ipc/QIpcClient.cpp
+index 8b05e7e..cbd9cdd 100644
+--- a/src/lib/gui/ipc/QIpcClient.cpp
++++ b/src/lib/gui/ipc/QIpcClient.cpp
+@@ -145,7 +145,16 @@ void QIpcClient::sendCommand(
+ 
+   QByteArray lenBuf = intToBytes(length);
+   if (lenBuf.size() != 4) {
++#if defined(__GNUC__)
++    // size of qsizetype is different between 32bit and 64bit
++#if UINTPTR_MAX == 0xffffffff
++    qFatal("unexpected int buffer size: %d", lenBuf.size());
++#else
+     qFatal("unexpected int buffer size: %lld", lenBuf.size());
++#endif
++#else
++    qFatal("unexpected int buffer size: %lld", lenBuf.size());
++#endif
+   }
+   stream->writeRawData(lenBuf, 4);
+   stream->writeRawData(charCommand, length);

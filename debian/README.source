@@ -1,0 +1,18 @@
+deskflow for Debian
+------------------
+
+There are some directories which was eliminated from archive.
+
+* res/dist/wix
+
+  It contains Microsoft Reciprocal License (Ms-RL).
+  Ms-RL was approved by OSI, but it was not already listed in
+  approved software in main. [1]
+
+  It has patent claim in 3. Conditions and Limitations (C).
+  This license condition apparently against DFSG policy
+  because it discriminate specific person or groups.
+
+  [1] https://www.debian.org/legal/licenses/index.en.html
+
+ -- HAYASHI Kentaro <kenhys@xdump.org>  Sat, 12 Oct 2024 17:45:10 +0900
