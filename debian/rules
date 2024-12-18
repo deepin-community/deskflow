@@ -1,4 +1,18 @@
 #!/usr/bin/make -f
 
+#export DH_VERBOSE = 1
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/buildflags.mk
+CFLAGS+=$(CPPFLAGS)
+CXXFLAGS+=$(CPPFLAGS)
+
 %:
-	dh $@
+	dh $@ --buildsystem=cmake
+
+override_dh_auto_build:
+	pandoc -s -f markdown -t man debian/deskflow.md -o debian/deskflow.1
+	pandoc -s -f markdown -t man debian/deskflow-server.md -o debian/deskflow-server.1
+	pandoc -s -f markdown -t man debian/deskflow-client.md -o debian/deskflow-client.1
+	dh_auto_build

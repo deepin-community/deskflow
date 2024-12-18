@@ -1,0 +1,23 @@
+From: Kentaro Hayashi <kenhys@xdump.org>
+Date: Sun, 13 Oct 2024 22:44:02 +0900
+Subject: Always disable update check on startup
+
+Forwarded: not-needed
+Author: HAYASHI Kentaro <kenhys@xdump.org>
+---
+ src/gui/src/MainWindow.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/gui/src/MainWindow.cpp b/src/gui/src/MainWindow.cpp
+index 9a3f0c7..c58238f 100644
+--- a/src/gui/src/MainWindow.cpp
++++ b/src/gui/src/MainWindow.cpp
+@@ -506,6 +506,8 @@ void MainWindow::open() {
+     showAndActivate();
+   }
+ 
++  // Always disable update check on startup
++  m_AppConfig.setEnableUpdateCheck(false);
+   if (!m_AppConfig.enableUpdateCheck().has_value()) {
+     m_AppConfig.setEnableUpdateCheck(messages::showUpdateCheckOption(this));
+   }

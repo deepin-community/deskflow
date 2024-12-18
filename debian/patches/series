@@ -1,0 +1,2 @@
+disable-update-check.patch
+fix-qsizetype-ftbfs.patch
